@@ -1,0 +1,18 @@
+{
+  "name": "rabotim-social-autopilot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Дневна автоматизация за постване във Facebook, Instagram и TikTok за rabotim.com",
+  "main": "src/index.js",
+  "scripts": {
+    "post": "node src/index.js",
+    "dry-run": "node test/dryrun.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "sharp": "^0.33.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

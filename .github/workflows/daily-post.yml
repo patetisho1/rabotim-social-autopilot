@@ -1,0 +1,45 @@
+name: Rabotim daily social post
+
+on:
+  schedule:
+    # 08:13 UTC ≈ 11:13 ч. българско лятно часово време. Смени часа по избор,
+    # но избягвай кръгли часове (00/30 мин) — GitHub Actions трупа опашки точно там.
+    - cron: "13 8 * * *"
+  workflow_dispatch: {} # позволява ръчно пускане от Actions таба, за тест
+
+permissions:
+  contents: write # нужно за git push на генерираните assets (public/social-assets)
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git for asset commits
+        run: |
+          git config user.name "rabotim-social-autopilot"
+          git config user.email "actions@users.noreply.github.com"
+
+      - name: Run daily post pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+          TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+          RABOTIM_STATS_ENDPOINT: ${{ secrets.RABOTIM_STATS_ENDPOINT }}
+          RABOTIM_STATS_API_KEY: ${{ secrets.RABOTIM_STATS_API_KEY }}
+          PUBLIC_ASSETS_REPO: ${{ github.repository }}
+          PUBLIC_ASSETS_BRANCH: social-assets
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: npm run post
